@@ -13,14 +13,12 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +39,7 @@ public class MainActivity extends Activity {
 	ArrayList<String> gridData3 = new ArrayList<String>();
 	ArrayList<String> gridData4 = new ArrayList<String>();
 	ArrayList<String> gridData5 = new ArrayList<String>();
+	Typeface font;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -48,6 +47,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);	
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		gv = (ListView)findViewById(R.id.lvTable);
+		font = Typeface.createFromAsset(this.getAssets(), "ArchitectsDaughter.ttf");
 		Prefs.setMyIntPref(this, "status", 0);
 		Prefs.setMyIntPref(this, "no", 0);
 		onNewIntent(getIntent());
@@ -149,8 +149,9 @@ public class MainActivity extends Activity {
 	            
 	            LayoutInflater li = LayoutInflater.from(MainActivity.this);
 		        View alertDialogView = li.inflate(R.layout.alert_dialog_list, null);		        
-		        
+		        TextView tv = (TextView)alertDialogView.findViewById(R.id.tvHeader);
 		        ListView lv = (ListView)alertDialogView.findViewById(R.id.lvList);
+		        tv.setTypeface(font,Typeface.BOLD_ITALIC);
 		        adapter = new MyListAdapter(MainActivity.this, names, type,timestamp);
 		        lv.setAdapter(adapter);
 		        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);		        

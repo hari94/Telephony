@@ -206,6 +206,7 @@ public class GridAdapter extends BaseAdapter {
 			        View vi = li.inflate(R.layout.alert_dialog_logged_list, null);		        
 			        ListView lv = (ListView)vi.findViewById(R.id.lvlogged);
 			        TextView tv = (TextView)vi.findViewById(R.id.tvTitle);
+			        
 			        String title="";
 			        switch(action)
 			        {
