@@ -15,8 +15,8 @@ public class CallLogDB {
 	public static final String KEY_TIME = "time";
 
 
-	private static final String DATABASE_NAME = "Friendsdb";
-	private static final String DATABASE_TABLE = "FriendsInfo";
+	private static final String DATABASE_NAME = "Callersdb";
+	private static final String DATABASE_TABLE = "CallsInfo";
 	private static final int DATABASE_VERSION = 1;
 	
 	private static final String DATABASE_CREATE = "CREATE TABLE "
@@ -103,6 +103,23 @@ public class CallLogDB {
 					+ c.getString(iNum)+ ";"
 					+ c.getString(iName)+ ";"
 					+ c.getString(iType) + ";"
+					+ c.getString(iTime) + "\n";
+		}
+		c.close();
+		return result;
+	}
+
+	public String getDataByType(String s) {
+		String[] columns = new String[] { KEY_NAME,KEY_TIME };
+		Cursor c = db.query(DATABASE_TABLE, columns,KEY_TYPE + "='" + s +"'", null, null, null,KEY_ID);
+		String result = "";
+
+		
+		int iName = c.getColumnIndex(KEY_NAME);		
+		int iTime=c.getColumnIndex(KEY_TIME);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			result = result					
+					+ c.getString(iName)+ ";"					
 					+ c.getString(iTime) + "\n";
 		}
 		c.close();

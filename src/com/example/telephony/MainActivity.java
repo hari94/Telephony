@@ -10,19 +10,19 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.pm.ActivityInfo;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
-import android.widget.GridView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -31,6 +31,7 @@ public class MainActivity extends Activity {
 	ListView gv;
 	MyListAdapter adapter ;
 	GridAdapter gadp;
+	CallerListAdapter cadp;
 	ArrayList<String> names = new ArrayList<String>();
 	ArrayList<String> type = new ArrayList<String>();
 	ArrayList<Integer> numList = new ArrayList<Integer>();
@@ -52,6 +53,91 @@ public class MainActivity extends Activity {
 		loadtable();
 		gadp = new GridAdapter(MainActivity.this,gridData1,gridData2,gridData3,gridData4,gridData5);
 		gv.setAdapter(gadp);
+		
+		gv.setOnItemClickListener(new OnItemClickListener() 
+			{
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,int pos, long id) 
+				{
+					String logType = (String)gadp.getItem(pos);
+					fetch(logType);
+				}
+			});
+	}
+
+	protected void fetch(final String logType) 
+	{
+		class Loaddb extends AsyncTask<Void, Void, Boolean>
+		{
+			ArrayList<String> callerNames = new ArrayList<String>();
+			ArrayList<String> times = new ArrayList<String>();
+			ProgressDialog pdia;
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				pdia = new ProgressDialog(MainActivity.this);
+				pdia.setMessage("Fetching data ...");
+				pdia.show();
+			}
+
+			@Override
+			protected Boolean doInBackground(Void... arg0) 
+			{
+				try{
+					CallLogDB db = new CallLogDB(MainActivity.this);
+					db.open();
+					String[] data = db.getDataByType(logType).split("\n");
+					callerNames.clear();
+					times.clear();
+					for(int i=0;i<data.length;i++)
+					{
+						String[] sub =data[i].split(";");
+						if(sub.length==2)
+						{
+							callerNames.add(sub[0]);
+							times.add(sub[1]);
+						}
+					}
+					db.close();
+					
+				return true;
+				
+				}catch(Exception e){
+					e.printStackTrace();
+					return false;
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) 
+			{
+				super.onPostExecute(result);
+				pdia.dismiss();
+				if(result.booleanValue())
+				{
+					
+					LayoutInflater li = LayoutInflater.from(MainActivity.this);
+			        View vi = li.inflate(R.layout.alert_dialog_logged_list, null);		        
+			        ListView lv = (ListView)vi.findViewById(R.id.lvlogged);
+			        TextView tv = (TextView)vi.findViewById(R.id.tvTitle);
+			        tv.setText("Calls logged under " + logType + " category" );
+			        
+			        cadp = new CallerListAdapter(MainActivity.this,callerNames,times);
+			        lv.setAdapter(cadp);
+			        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);		        
+			        builder.setView(vi);
+					
+			        AlertDialog dialog = builder.create();
+			        dialog.show();			        
+				}
+				
+			}
+			
+		}
+		
+		Loaddb ldb = new Loaddb();
+		ldb.execute();
 	}
 
 	private void getAllCallLogs(ContentResolver cr,int repeat,int i,int flag) 
@@ -61,7 +147,7 @@ public class MainActivity extends Activity {
 		String strOrder = android.provider.CallLog.Calls.DATE + " DESC";
 		Uri callUri = Uri.parse("content://call_log/calls");
 		Cursor cur = cr.query(callUri, null, null, null, strOrder);
-		// loop through cursor
+		
 		CallLogDB db = new CallLogDB(this);
 		db.open();		
 		String calltype = new String();
@@ -77,7 +163,6 @@ public class MainActivity extends Activity {
 			String dateString = formatter.format(new Date(Long.parseLong(callDate)));
 
 			int callType = Integer.parseInt(cur.getString(cur.getColumnIndex(android.provider.CallLog.Calls.TYPE)));
-			String isCallNew = cur.getString(cur.getColumnIndex(android.provider.CallLog.Calls.NEW));
 			String duration = cur.getString(cur.getColumnIndex(android.provider.CallLog.Calls.DURATION));
 			
 			
@@ -137,8 +222,8 @@ public class MainActivity extends Activity {
 	        	type.clear();
 	        	numList.clear();
 	            final int n = extras.getInt("num") ;
-	            //for(int x = 0 ;x<names.size();x++)
-					getAllCallLogs(getContentResolver(),n,0,0);
+	            
+				getAllCallLogs(getContentResolver(),n,0,0);
 	           
 	            
 	            LayoutInflater li = LayoutInflater.from(MainActivity.this);
@@ -149,6 +234,7 @@ public class MainActivity extends Activity {
 		        lv.setAdapter(adapter);
 		        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);		        
 		        builder.setView(alertDialogView);
+		        builder.setCancelable(false);
 		        builder.setPositiveButton("Log it!", new OnClickListener() {
 					
 					@Override
@@ -157,7 +243,7 @@ public class MainActivity extends Activity {
 						for(int i=0;i<names.size();i++)
 						{
 							if(adapter.checked(i))
-								{numList.add(i);Log.d("NUM", numList.get(i)+"");}
+								numList.add(i);
 						}						
 						refresh(n);
 					}
@@ -203,8 +289,8 @@ public class MainActivity extends Activity {
 			}
 
 			@Override
-			protected void onPostExecute(Boolean result) {
-				// TODO Auto-generated method stub
+			protected void onPostExecute(Boolean result) 
+			{
 				super.onPostExecute(result);
 				if(result.booleanValue())
 				{
@@ -254,11 +340,6 @@ public class MainActivity extends Activity {
 		db.close();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
-	}
+	
 
 }

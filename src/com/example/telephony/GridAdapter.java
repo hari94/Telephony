@@ -1,3 +1,4 @@
+
 package com.example.telephony;
 
 import java.util.ArrayList;
@@ -35,8 +36,8 @@ public class GridAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int arg0) {
-		return arg0;
+	public Object getItem(int pos) {
+		return grid4.get(pos);
 	}
 
 	@Override
