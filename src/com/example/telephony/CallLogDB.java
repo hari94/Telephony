@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class CallLogDB {
 	public static final String KEY_ID = "_id";
@@ -120,6 +121,40 @@ public class CallLogDB {
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 			result = result					
 					+ c.getString(iName)+ ";"					
+					+ c.getString(iTime) + "\n";
+		}
+		c.close();
+		return result;
+	}
+	
+	public String getDataByNum(String s) {
+		String[] columns = new String[] { KEY_NAME,KEY_TIME };
+		Cursor c = db.query(DATABASE_TABLE, columns,KEY_NUM + "='" + s +"'", null, null, null,KEY_ID);
+		String result = "";
+
+		
+		int iName = c.getColumnIndex(KEY_NAME);		
+		int iTime=c.getColumnIndex(KEY_TIME);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			result = result					
+					+ c.getString(iName)+ ";"					
+					+ c.getString(iTime) + "\n";
+		}
+		c.close();
+		return result;
+	}
+
+	public String getDataByName(String s) {
+		String[] columns = new String[] { KEY_NUM,KEY_TIME };
+		Cursor c = db.query(DATABASE_TABLE, columns,KEY_NAME + "='" + s +"'", null, null, null,KEY_ID);
+		String result = "";
+
+		
+		int iNum = c.getColumnIndex(KEY_NUM);		
+		int iTime=c.getColumnIndex(KEY_TIME);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			result = result					
+					+ c.getString(iNum)+ ";"					
 					+ c.getString(iTime) + "\n";
 		}
 		c.close();

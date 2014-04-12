@@ -3,6 +3,7 @@ package com.example.telephony;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,8 @@ public class CallerListAdapter extends BaseAdapter{
 	Context context;
 	ArrayList<String> grid1, grid2;
 	LayoutInflater inflater;
-
+	Typeface font;
+	
 	public CallerListAdapter(Context context, ArrayList<String> callerNames,
 			ArrayList<String> times) {
 
@@ -24,7 +26,7 @@ public class CallerListAdapter extends BaseAdapter{
 
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+		font = Typeface.createFromAsset(context.getAssets(), "ArchitectsDaughter.ttf");
 	}
 
 	@Override
@@ -66,6 +68,8 @@ public class CallerListAdapter extends BaseAdapter{
 
 		holder.tvCellName.setText(grid1.get(pos));
 		holder.tvTime.setText(grid2.get(pos));
+		holder.tvCellName.setTypeface(font,Typeface.BOLD);
+		holder.tvTime.setTypeface(font,Typeface.BOLD);
 		return cell;
 	}
 

@@ -12,11 +12,12 @@
         android:layout_weight="1"
         android:paddingLeft="2sp"
         android:text="10"
+        android:gravity="center"
         android:textSize="12sp"
         android:background="@drawable/border"/>
 
     <TextView
-        android:id="@+id/tvRowNmae"
+        android:id="@+id/tvRowName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="5"

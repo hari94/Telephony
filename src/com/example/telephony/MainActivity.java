@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
 	CallerListAdapter cadp;
 	ArrayList<String> names = new ArrayList<String>();
 	ArrayList<String> type = new ArrayList<String>();
+	ArrayList<String> timestamp = new ArrayList<String>();
 	ArrayList<Integer> numList = new ArrayList<Integer>();
 	ArrayList<String> gridData1 = new ArrayList<String>();
 	ArrayList<String> gridData2= new ArrayList<String>();
@@ -53,92 +54,10 @@ public class MainActivity extends Activity {
 		loadtable();
 		gadp = new GridAdapter(MainActivity.this,gridData1,gridData2,gridData3,gridData4,gridData5);
 		gv.setAdapter(gadp);
-		
-		gv.setOnItemClickListener(new OnItemClickListener() 
-			{
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,int pos, long id) 
-				{
-					String logType = (String)gadp.getItem(pos);
-					fetch(logType);
-				}
-			});
+	
 	}
 
-	protected void fetch(final String logType) 
-	{
-		class Loaddb extends AsyncTask<Void, Void, Boolean>
-		{
-			ArrayList<String> callerNames = new ArrayList<String>();
-			ArrayList<String> times = new ArrayList<String>();
-			ProgressDialog pdia;
-			@Override
-			protected void onPreExecute() {
-				super.onPreExecute();
-				pdia = new ProgressDialog(MainActivity.this);
-				pdia.setMessage("Fetching data ...");
-				pdia.show();
-			}
 
-			@Override
-			protected Boolean doInBackground(Void... arg0) 
-			{
-				try{
-					CallLogDB db = new CallLogDB(MainActivity.this);
-					db.open();
-					String[] data = db.getDataByType(logType).split("\n");
-					callerNames.clear();
-					times.clear();
-					for(int i=0;i<data.length;i++)
-					{
-						String[] sub =data[i].split(";");
-						if(sub.length==2)
-						{
-							callerNames.add(sub[0]);
-							times.add(sub[1]);
-						}
-					}
-					db.close();
-					
-				return true;
-				
-				}catch(Exception e){
-					e.printStackTrace();
-					return false;
-				}
-			}
-
-			@Override
-			protected void onPostExecute(Boolean result) 
-			{
-				super.onPostExecute(result);
-				pdia.dismiss();
-				if(result.booleanValue())
-				{
-					
-					LayoutInflater li = LayoutInflater.from(MainActivity.this);
-			        View vi = li.inflate(R.layout.alert_dialog_logged_list, null);		        
-			        ListView lv = (ListView)vi.findViewById(R.id.lvlogged);
-			        TextView tv = (TextView)vi.findViewById(R.id.tvTitle);
-			        tv.setText("Calls logged under " + logType + " category" );
-			        
-			        cadp = new CallerListAdapter(MainActivity.this,callerNames,times);
-			        lv.setAdapter(cadp);
-			        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);		        
-			        builder.setView(vi);
-					
-			        AlertDialog dialog = builder.create();
-			        dialog.show();			        
-				}
-				
-			}
-			
-		}
-		
-		Loaddb ldb = new Loaddb();
-		ldb.execute();
-	}
 
 	private void getAllCallLogs(ContentResolver cr,int repeat,int i,int flag) 
 	{
@@ -170,30 +89,30 @@ public class MainActivity extends Activity {
 			{
 			//incoming
 			case 1:
-				calltype = "INCOMING";
+				calltype = "incoming";
 				break;
 			//outgoing
 			case 2:
-				calltype = "OUTGOING";
+				calltype = "outgoing";
 				break;
 			//missed
 			case 3:
-				calltype = "MISSED";
+				calltype = "missed";
 				break;
 			}
 			
 			
 			
 			if(callName == null)
-				callName = "Unknown (X)";
+				callName = "Unknown";
 			if(flag == 0)
 			{
 			names.add(callName);
 			type.add(calltype);
+			timestamp.add(dateString.split(" ")[1]);
 			}
 			else if(x == i && flag==1)
 			{
-			Log.d("DETAILS","num = " + callNumber + " name :"+callName+" duration :"+duration+" type :"+callType);
 			db.insertData(callName, callNumber, calltype, dateString);
 			}
 			repeat --;x++;
@@ -220,7 +139,9 @@ public class MainActivity extends Activity {
 	        	// Data From Notification	 
 	        	names.clear();
 	        	type.clear();
+	        	timestamp.clear();
 	        	numList.clear();
+	        	
 	            final int n = extras.getInt("num") ;
 	            
 				getAllCallLogs(getContentResolver(),n,0,0);
@@ -230,7 +151,7 @@ public class MainActivity extends Activity {
 		        View alertDialogView = li.inflate(R.layout.alert_dialog_list, null);		        
 		        
 		        ListView lv = (ListView)alertDialogView.findViewById(R.id.lvList);
-		        adapter = new MyListAdapter(MainActivity.this, names, type);
+		        adapter = new MyListAdapter(MainActivity.this, names, type,timestamp);
 		        lv.setAdapter(adapter);
 		        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);		        
 		        builder.setView(alertDialogView);
@@ -246,12 +167,14 @@ public class MainActivity extends Activity {
 								numList.add(i);
 						}						
 						refresh(n);
+						arg0.dismiss();
 					}
 				});
 		        builder.setNegativeButton("Cancel", new OnClickListener() {
 					
 					@Override
-					public void onClick(DialogInterface dialog, int which) {
+					public void onClick(DialogInterface dialog, int which) 
+					{
 						dialog.dismiss();
 					}
 				});
@@ -297,6 +220,7 @@ public class MainActivity extends Activity {
 					Toast.makeText(MainActivity.this, "Successfully Logged", Toast.LENGTH_SHORT).show();
 					gadp = new GridAdapter(MainActivity.this,gridData1,gridData2,gridData3,gridData4,gridData5);
 					gv.setAdapter(gadp);
+					pdia.dismiss();
 				}
 				pdia.dismiss();
 			}
@@ -317,8 +241,8 @@ public class MainActivity extends Activity {
 		gridData4.clear();
 		gridData5.clear();
 		gridData1.add("ID");
-		gridData2.add("NAME");
-		gridData3.add("NUMBER");
+		gridData2.add("NUMBER");
+		gridData3.add("NAME");
 		gridData4.add("TYPE");
 		gridData5.add("TIME");
 		

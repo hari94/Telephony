@@ -11,12 +11,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
+        android:textSize="12sp"
         android:text="harish" />
 	<TextView
 	    android:id="@+id/tvCallerTime"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
+        android:textSize="12sp"
         android:text="outgoing" />
 
 </LinearLayout>

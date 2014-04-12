@@ -10,10 +10,15 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="5sp"
-        android:text="Tick the calls to be logged"
+        android:text="Select the calls to be logged"
         android:textSize="20sp" >
     </TextView>
-
+	<View
+	    android:id="@+id/linebar"
+	    android:layout_height="2dp"
+	    android:layout_width="match_parent"
+	    android:background="#454343"
+	    />
     <ListView
         android:id="@+id/lvList"
         android:layout_width="match_parent"

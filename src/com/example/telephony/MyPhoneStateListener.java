@@ -45,7 +45,6 @@ int num = 0;
 				{
 					Prefs.setMyIntPref(context, "no",1);
 					num = 0;
-					Log.i("NO Of Calls", num+"");
 				}
 				
 				//Notification
@@ -53,13 +52,11 @@ int num = 0;
 				Intent intent = new Intent(context, MainActivity.class);
 				intent.putExtra("num", num+1);
 			    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-			    Log.d("EXTRA", intent.getExtras().toString()+"testing");
 			    PendingIntent pi = PendingIntent.getActivity(context,1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			    
 			    
 			    
 			    // Build notification
-			    // Actions are just fake
 			    
 			    Notification noti = new Notification.Builder(context)
 			        .setContentTitle("Log It !")

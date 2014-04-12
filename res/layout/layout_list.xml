@@ -7,20 +7,27 @@
 
     <TextView
         android:id="@+id/tvName"
-        android:paddingLeft="10dp"
+        android:paddingLeft="1sp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.5"
+        android:layout_weight="0.3"
         android:text="harish" />
+    <TextView
+	    android:id="@+id/tvTimestamp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:text="outgoing" />
 	<TextView
 	    android:id="@+id/tvType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.3"
+        android:layout_weight="0.4"
         android:text="outgoing" />
+	
 	<CheckBox 
 	    android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.2"
+        android:layout_weight="0.1"
         android:id="@+id/cbCheck"/>
 </LinearLayout>
