@@ -115,7 +115,8 @@ public class MainActivity extends Activity {
 			{
 			db.insertData(callName, callNumber, calltype, dateString);
 			}
-			repeat --;x++;
+			repeat --;
+			x++;
 			}			
 		
 		db.close();
@@ -201,15 +202,18 @@ public class MainActivity extends Activity {
 			@Override
 			protected Boolean doInBackground(Void... arg0) 
 			{
-				try{
+				if(numList.size() == 0)
+					return false;
+				try
+				{
 				for(int x=0;x<numList.size();x++)
 					getAllCallLogs(getContentResolver(),n,numList.get(x),1);
 					loadtable();
 				return true;
 				}catch(Exception e){
-					e.printStackTrace();
-					return false;
+					e.printStackTrace();					
 				}
+				return false;
 			}
 
 			@Override
